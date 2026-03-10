@@ -1,4 +1,4 @@
-from funktion import launch_browser, open_inet_homepage, apply_filter, search_product
+from SMTEST.funktion import launch_browser, open_inet_homepage, apply_filter, search_product
 
 # 1️⃣ Positivt test – filtrering
 def test_filter_functionality():
