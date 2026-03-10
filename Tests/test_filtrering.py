@@ -7,24 +7,31 @@ from funktion import accept_cookies, search_product
 from playwright.sync_api import sync_playwright, expect
 
 def test_filterering():
-    """Test att filtrering fungerar på Inet"""
+    """Test: Filtrering fungerar på Inet med 'Bärbar dator'"""
     with sync_playwright() as p:
         browser = p.chromium.launch(headless=False)
         page = browser.new_page()
-        page.goto("https://www.inet.se/")
+        try:
+            # Gå till webbshopen
+            page.goto("https://www.inet.se/")
+            
+            # Acceptera cookies
+            accept_cookies(page)
+            
+            # Sök efter en produktkategori
+            search_product(page, "Laptop")
+            
+            # Klicka på filter "Bärbar dator"
+            filter_laptop = page.locator("text=Bärbar dator")
+            filter_laptop.scroll_into_view_if_needed()
+            filter_laptop.click()
+            
+            # Verifiera att filtreringen fungerar
+            expect(page.locator("h1")).to_contain_text("Bärbar dator", timeout=5000)
+            
+            print("Filtreringstestet lyckades: 'Bärbar dator' filter tillämpades korrekt")
+        finally:
+            browser.close()
 
-        # Acceptera cookies
-        accept_cookies(page)
-
-        # Sök efter exempelprodukt
-        search_product(page, "Laptop")
-
-        # Klicka på filter "Gaming" (exempel på filter)
-        filter_gaming = page.locator("text=Gaming")
-        filter_gaming.scroll_into_view_if_needed()
-        filter_gaming.click()
-
-        # Verifiera att filtreringen fungerar
-        expect(page.locator("h1")).to_contain_text("Gaming")
-
-        browser.close()
+if __name__ == "__main__":
+    test_filterering()
