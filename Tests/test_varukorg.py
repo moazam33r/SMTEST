@@ -1,5 +1,5 @@
 from playwright.sync_api import sync_playwright
-from SMTEST.funktion import accept_cookies, search_product, select_product, add_to_cart
+from funktion import accept_cookies, search_product, select_product, add_to_cart
 
 def test_lagg_i_varukorg():
     with sync_playwright() as p:
