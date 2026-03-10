@@ -1,20 +1,30 @@
-import pytest
-from funktion import accept_cookies, search_product, select_product
-from playwright.sync_api import expect
+# tests/test_filtrering.py
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-def test_filtrering(page):
-    # Gå till startsidan
-    page.goto("https://www.inet.se/")
+from funktion import accept_cookies, search_product
+from playwright.sync_api import sync_playwright, expect
 
-    # Acceptera cookies
-    accept_cookies(page)
+def test_filterering():
+    """Test att filtrering fungerar på Inet"""
+    with sync_playwright() as p:
+        browser = p.chromium.launch(headless=False)
+        page = browser.new_page()
+        page.goto("https://www.inet.se/")
 
-    # Sök efter en produktkategori
-    search_product(page, "Laptops")
+        # Acceptera cookies
+        accept_cookies(page)
 
-    # Välj första produkten i sökresultatet
-    select_product(page, "Lenovo IdeaPad 3")
+        # Sök efter exempelprodukt
+        search_product(page, "Laptop")
 
-    # Verifiera att produktsidan laddades korrekt
-    product_title = page.locator("h1")
-    expect(product_title).to_have_text("Lenovo IdeaPad 3")
+        # Klicka på filter "Gaming" (exempel på filter)
+        filter_gaming = page.locator("text=Gaming")
+        filter_gaming.scroll_into_view_if_needed()
+        filter_gaming.click()
+
+        # Verifiera att filtreringen fungerar
+        expect(page.locator("h1")).to_contain_text("Gaming")
+
+        browser.close()
